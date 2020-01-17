@@ -293,7 +293,7 @@ public:
 	void Consumer()
 	{
 		unique_lock<std::mutex> lk(mMutex);
-		cv.wait(lk, [&]() { return count == size; });
+		cv.wait(lk, [&]() { return count != 0; });
 		int item = q.front();
 		q.pop();
 		count--;
@@ -310,7 +310,7 @@ private:
 	condition_variable cv;
 	mutex mMutex;
 	queue<int> q;
-	int size = 10000000;
+	int size = 10000;
 	int count = 0;
 };
 
@@ -323,7 +323,7 @@ int main()
 	DataTransition* d = new DataTransition;
 	auto lamb1 = [](DataTransition* d)
 	{
-		for (int i = 0; i < 10000000; ++i)
+		for (int i = 0; i < 100000; ++i)
 		{
 			d->Producer(i);
 		}
@@ -333,7 +333,7 @@ int main()
 
 	auto lamb2 = [](DataTransition* d)
 	{
-		for (int i = 0; i < 10000000; ++i)
+		for (int i = 0; i < 100000; ++i)
 		{
 			d->Consumer();
 		}
